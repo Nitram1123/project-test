@@ -1,0 +1,13 @@
+includes:
+	- vendor/phpstan/phpstan-beberlei-assert/extension.neon
+	- vendor/phpstan/phpstan-symfony/extension.neon
+parameters:
+	level: 7
+	paths:
+		- src
+	ignoreErrors: {}
+	#	- %rootDir%/../../../migrations
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml
+	excludes_analyse:
+		- %rootDir%/../../../tests

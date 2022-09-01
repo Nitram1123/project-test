@@ -1,0 +1,35 @@
+security:
+    enable_authenticator_manager: true
+    password_hashers:
+        App\Entity\Member:
+            algorithm: auto
+
+    role_hierarchy:
+        ROLE_USER:            []
+        ROLE_ADMIN:           [ ROLE_USER ]
+        ROLE_SUPER_ADMIN:     [ ROLE_ADMIN ]
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Member
+                property: username
+
+    firewalls:
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/api
+            stateless: true
+            jwt: ~
+
+    access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api$, roles: PUBLIC_ACCESS }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
