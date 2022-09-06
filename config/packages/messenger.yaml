@@ -1,0 +1,9 @@
+framework:
+    messenger:
+        reset_on_message: true
+        transports:
+            sync: 'sync://'
+
+        routing:
+            'App\Query\QueryInterface': sync
+            'App\Mutator\CommandInterface': sync

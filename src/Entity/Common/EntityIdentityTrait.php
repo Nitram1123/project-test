@@ -12,7 +12,7 @@ trait EntityIdentityTrait
     #[ORM\Id]
     #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
     #[ORM\GeneratedValue]
-    #[Groups(['entity_id'])]
+    #[Groups(['item:read'])]
     protected int|null $id = null;
 
     /**

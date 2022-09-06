@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Common\EntityUuidIdentityTrait;
 use App\Entity\Common\TimestampableTrait;
 use App\Repository\ArticleRepository;
@@ -12,46 +11,40 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
-#[ApiResource(
-    collectionOperations: [
-        'get' => [ 'method' => 'get' ],
-        'post' => [ 'security' => "is_granted('ROLE_ADMIN')" ],
-    ],
-    itemOperations: [
-        'get' => [ 'method' => 'get' ],
-        'put' => [ 'security' => "is_granted('ROLE_ADMIN')" ],
-        'delete' => [ 'security' => "is_granted('ROLE_ADMIN')" ],
-    ],
-)]
 class Article
 {
     use EntityUuidIdentityTrait;
     use TimestampableTrait;
 
     #[ORM\Column]
+    #[Groups(['article:read'])]
     private bool $published = false;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    private string|null $title = null;
+    #[Groups(['article:read'])]
+    private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
-    private string|null $content = null;
+    #[Groups(['article:read'])]
+    private string $content;
 
     #[ORM\ManyToOne(inversedBy: 'articles', cascade:['persist'])]
     #[ORM\JoinColumn(nullable: false)]
-    private Member|null $author = null;
+    #[Groups(['article:read'])]
+    private Member $author;
 
     /** @var Collection<int, Comment> */
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class, cascade:['persist'])]
     private Collection $comments;
 
-    public function __construct()
+    public function __construct(string $title, string $content, Member $author)
     {
+        $this->title    = $title;
+        $this->content  = $content;
+        $this->author   = $author;
         $this->comments = new ArrayCollection();
     }
 

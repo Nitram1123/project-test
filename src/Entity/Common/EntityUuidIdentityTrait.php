@@ -14,7 +14,7 @@ trait EntityUuidIdentityTrait
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy:'CUSTOM')] // @phpstan-ignore-line
     #[ORM\CustomIdGenerator('doctrine.uuid_generator')] // @phpstan-ignore-line
-    #[Groups(['entity_uuid'])]
+    #[Groups(['item:read'])]
     protected Uuid $id;
 
     /**

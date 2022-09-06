@@ -26,10 +26,7 @@ trait CommentTrait
         $commentRepository = static::getContainer()->get(CommentRepository::class);
         $bob               = $memberRepository->findOneBy(['username' => 'Bob']);
         $alice             = $memberRepository->findOneBy(['username' => 'Alice']);
-        $article           = (new Article())
-            ->setTitle('title')
-            ->setContent('content')
-            ->setAuthor($bob);
+        $article           = new Article('title', 'content', $bob);
 
         $comment = new Comment();
         $comment

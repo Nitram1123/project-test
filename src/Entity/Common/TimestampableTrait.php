@@ -6,6 +6,7 @@ namespace App\Entity\Common;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 trait TimestampableTrait
@@ -13,11 +14,13 @@ trait TimestampableTrait
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: 'datetime_immutable')]
     #[Assert\NotNull(groups:['post_persist'])]
+    #[Groups(['item:read'])]
     protected \DateTimeImmutable|null $createdAt;
 
     #[Gedmo\Timestampable(on: 'update')]
     #[ORM\Column(type: 'datetime_immutable')]
     #[Assert\NotNull(groups:['post_persist'])]
+    #[Groups(['item:read'])]
     protected \DateTimeImmutable|null $updatedAt;
 
     public function getCreatedAt(): \DateTimeImmutable

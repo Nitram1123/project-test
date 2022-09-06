@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Common\EntityUuidIdentityTrait;
 use App\Entity\Common\TimestampableTrait;
 use App\Repository\NoteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
-#[ApiResource(
-    collectionOperations: ['post' => ['security_post_denormalize' => "is_granted('NOTE_NEW', object)"]],
-    itemOperations: ['get'],
-)]
 class Note
 {
     use EntityUuidIdentityTrait;
@@ -27,14 +23,16 @@ class Note
         min: 0,
         max: 5,
     )]
-
+    #[Groups(['note:read'])]
     private int|null $rate = null;
 
     #[ORM\ManyToOne(inversedBy: 'notes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['note:read'])]
     private Member|null $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'notes')]
+    #[Groups(['note:read'])]
     private Comment|null $comment = null;
 
     public function getRate(): int|null

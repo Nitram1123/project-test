@@ -20,12 +20,12 @@ class CommentTest extends ApiTestCase
         $client = static::createClient();
         $token  = $this->getToken($client, 'Alice', 'alice');
 
-        $response = $client->request('GET', '/api/comments?article=' . $this->getFirstArticleIri(), [
+        $response = $client->request('GET', '/api/comments?article=' . $this->articles[0]->getId(), [
             'auth_bearer' => $token,
         ]);
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['hydra:totalItems' => 10]);
+        $this->assertJsonContains(['numberTotalItem' => 10]);
         $this->removeComments();
     }
 
@@ -35,12 +35,12 @@ class CommentTest extends ApiTestCase
         $this->initializeComments();
         $token = $this->getToken($client, 'Alice', 'alice');
 
-        $response = $client->request('GET', '/api/comments?parent=' . $this->getCommentIri(1), [
+        $response = $client->request('GET', '/api/comments?parent=' . $this->comments[1]->getId(), [
             'auth_bearer' => $token,
         ]);
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonContains(['hydra:totalItems' => 5]);
+        $this->assertJsonContains(['numberTotalItem' => 5]);
         $this->removeComments();
     }
 
@@ -51,7 +51,7 @@ class CommentTest extends ApiTestCase
 
         $comment = [
             'content' => 'The best comment in the world',
-            'article' => $this->getFirstArticleIri(),
+            'articleId' => $this->articles[0]->getId(),
         ];
 
         $response = $client->request('POST', '/api/comments', [
@@ -60,7 +60,9 @@ class CommentTest extends ApiTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(201);
-        $this->assertJsonContains($comment);
+        $this->assertJsonContains([
+            'content' => 'The best comment in the world',
+        ]);
         $this->removeComments();
     }
 
@@ -72,7 +74,7 @@ class CommentTest extends ApiTestCase
 
         $comment = [
             'content' => 'The best comment in the world',
-            'parent' => $this->getCommentIri(0),
+            'parentId' => $this->comments[0]->getId(),
         ];
 
         $response = $client->request('POST', '/api/comments', [
@@ -81,7 +83,9 @@ class CommentTest extends ApiTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(201);
-        $this->assertJsonContains($comment);
+        $this->assertJsonContains([
+            'content' => 'The best comment in the world',
+        ]);
         $this->removeComments();
     }
 
@@ -92,7 +96,6 @@ class CommentTest extends ApiTestCase
 
         $comment = [
             'content' => '',
-            'article' => $this->getFirstArticleIri(),
         ];
 
         $response = $client->request('POST', '/api/comments', [
@@ -102,7 +105,8 @@ class CommentTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(422);
         $this->assertJsonContains([
-            'hydra:description' => 'content: This value should not be blank.',
+            'detail' => "content: This value should not be blank.\n"
+                . 'parentId: A comment should be linked to an article or an other comment.',
         ]);
 
         $this->removeComments();
@@ -138,7 +142,7 @@ class CommentTest extends ApiTestCase
             'enabled' => true,
         ];
 
-        $response = $client->request('PUT', '/api/comments/' . $this->comments[1]->getId() . '/approuve', [
+        $response = $client->request('PUT', '/api/comments/' . $this->comments[1]->getId(), [
             'json' => $comment,
             'auth_bearer' => $token,
         ]);

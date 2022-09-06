@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Common\EntityUuidIdentityTrait;
 use App\Entity\Common\TimestampableTrait;
 use App\Repository\MemberRepository;
@@ -16,10 +15,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: '`member`')]
-#[ApiResource(
-    collectionOperations: ['get'],
-    itemOperations: ['get'],
-)]
 class Member implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use EntityUuidIdentityTrait;
